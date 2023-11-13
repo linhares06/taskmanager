@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<h2>Search</h2>
+  <form action="{% url 'manager:search' %}" method="get">
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label for="title">Title</label>
+        {{form.title}}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="description">Description</label>
+        {{form.description}}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="due_date">Due Date</label>
+        {{form.due_date}}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label for="priority">Priority</label>
+        {{form.priority}}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="priority">Status</label>
+        {{form.status}}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="priority">Assignee</label>
+        {{form.assignee}}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label for="category">Tag</label>
+        {{form.tag}}
+      </div>
+      <div class="col-md-12">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+    
+  </form>
+
+  {% if results %}
+    <h4>Search results:</h4>
+      <table class="table">
+        <tbody>
+          {% for result in results %}
+              <tr><td><a href="{% url 'manager:detail' result.id %}">{{result.title}}</td></tr>
+          {% empty %}
+              <tr><td>No results found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  {% endif %}
+
+{% endblock %}

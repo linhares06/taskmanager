@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}{{task.title}}{% endblock %}
+
+{% block content %}
+
+<!-- Modal -->
+<div id="addCommentModalCenter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">Content:</h5>
+        
+      </div>
+      <div class="modal-body">
+        <form id="commentForm" action="." method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          {{form.content}}
+
+          {% if form.errors or form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for field in form %}
+                  {{ field.errors }}
+              {% endfor %}
+
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+          
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" form="commentForm" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <h2>Task Detail</h2>
+  <div class="card">
+    <div class="card-header">
+      <h5>{{task.title}}</h5>
+    </div>
+    <div class="card-body">
+      <p class="card-text">Due Date: {{task.due_date}}</p>
+      {% if task.completed %}
+        <p class="card-text">Completed Date: {{task.completed_at}}</p>
+      {% endif %}
+      <p class="card-text">Description: {{task.description}}</p>
+      <p class="card-text">Priority: {{task.priority}}</p>
+      <p class="card-text">Status: 
+        {% if not task.completed %}
+          {{task.status}}
+        {% else %}
+          Completed
+        {% endif %}
+      </p>
+      <p class="card-text">Assigned To: {{task.assignee}}</p>
+      <p class="card-text">Tags:
+        {% for tag in task.tags.all %}
+          {% if forloop.first %}{{tag.name}}{% else %}| {{tag.name}}{% endif %}
+        {% endfor %}
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <h5>Task Actions</h5>
+    <div class="btn-group" role="group" aria-label="Task Actions">
+      <a href="{% url 'manager:mark_completed' task.id %}">
+        <button type="button" class="btn btn-primary">
+          {% if not task.completed %}
+            Check as completed
+          {% else %}
+            Uncheck as completed
+          {% endif %}
+        </button>
+      </a>
+      {% if not task.completed %}
+        <a>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCommentModalCenter">Add Comment</button>
+        </a>
+        {% if task.user == user %}
+          <a href="{% url 'manager:edit' task.id %}">
+            <button type="button" class="btn btn-primary">Edit Task</button>
+          </a>
+        {% endif %}
+        <a href="{% url 'manager:delete' task.id %}">
+          <button type="button" class="btn btn-danger">Delete Task</button>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if comments %}
+  <div class="mt-4">
+    <h5>Comments</h5>
+    <div class="card">
+      <div class="card-body">
+        {% for comment in comments %}
+          <h6 class="card-subtitle mb-2 text-muted">{{comment.author}} - {{comment.created_at}}</h6>
+          <p class="card-text">{{comment.content}}</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

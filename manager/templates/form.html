@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>{{title}}</h2>
+    <form action="." method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {{ form.non_field_errors }}
+
+      <form method="post" action="." enctype="multipart/form-data">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="title">Title:</label>
+            {{form.title}}
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="due_date">Due Date:</label>
+            {{form.due_date}}
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="description">Assignee:</label>
+            {{form.assignee}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="title">Description:</label>
+            {{form.description}}
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="due_date">Priority:</label>
+            {{form.priority}}
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="description">Tag:</label>
+                {{form.tags}}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="description">Status:</label>
+            {{form.status}}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </form>
+
+      {% if form.errors or form.non_field_errors %}
+          <div class="alert alert-danger">
+              {% for field in form %}
+                  {{ field.errors }}
+              {% endfor %}
+
+              {{ form.non_field_errors }}
+          </div>
+      {% endif %}
+      
+    </form>
+</div>
+
+{% endblock %}

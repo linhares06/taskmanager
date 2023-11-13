@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+  <title>Task Manager</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <header class="bg-light py-5">
+    <div class="container text-center">
+      <h1>Welcome to Task Manager</h1>
+    </div>
+  </header>
+
+  <section id="features" class="py-5">
+    <div class="container text-center">
+      <h2>Features</h2>
+      <ul class="list-unstyled">
+        <li>Task creation and management</li>
+        <li>Due dates and priorities</li>
+        <li>Assign tasks to team members</li>
+        <li>Comment and collaborate on tasks</li>
+        <li>Track task progress and completion</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="cta" class="bg-light py-5">
+    <div class="container text-center">
+      <h2>Ready to Get Started?</h2>
+      <p>Create an account or log in to start managing your tasks today.</p>
+      <a href="{% url 'manager:signup' %}" class="btn btn-primary btn-lg">Sign Up</a>
+      <a href="{% url 'manager:login' %}" class="btn btn-primary btn-lg">Log In</a>
+    </div>
+  </section>
+
+  <div class="logo">
+    <pre>
+        ______              __       __                 
+        / ____/___   ____   / /______/ /_____  ____ ___  
+       / / __ / _ \ / __ \ / // ___/ __/ __ \/ __ `__ \ 
+      / /_/ //  __// /_/ // /(__  ) /_/ /_/ / / / / / / 
+      \____/ \___// .___//_/____/\__/\____/_/ /_/ /_/  
+                  /_/                                   
+    </pre>
+  </div>
+
+  <footer class="bg-light py-4">
+    <div class="container text-center">
+      <p>&copy; 2023 Task Manager. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

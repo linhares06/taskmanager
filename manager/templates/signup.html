@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+  <title>Task Manager - Sign Up</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <div class="form-container">
+          <h2>Sign Up</h2>
+          <form method="post" accept=".">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            <div class="mb-3">
+                <label class="form-label">Username</label><br>
+                {{ form.username }}
+            </div>
+    
+            <div class="mb-3">
+                <label class="form-label">Email</label><br>
+                {{ form.email }}
+            </div>
+    
+            <div class="mb-3">
+                <label class="form-label">Password</label><br>
+                {{ form.password1 }}
+            </div>
+    
+            <div class="mb-3">
+                <label class="form-label">Repeat password</label><br>
+                {{ form.password2 }}
+            </div>
+    
+            {% if form.errors or form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for field in form %}
+                        {{ field.errors }}
+                    {% endfor %}
+    
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+          
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary">Sign Up</button>
+            </div>
+          </form>
+          <p class="text-center">Already have an account? <a href="{% url 'manager:login' %}">Log In</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

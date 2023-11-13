@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block navbar %}Welcome {{user}}{% endblock %}
+
+{% block content %}
+  <div class="task-summary">
+    <h2>Task Summary</h2>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h3 class="card-title">Total Tasks</h3>
+            <p class="card-text">
+              {{total_tasks}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h3 class="card-title">Completed Tasks</h3>
+            <p class="card-text">
+              {{total_completed}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h3 class="card-title">Progress</h3>
+            <p class="card-text">
+              {{completion_rate}} % Completed
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if upcoming_tasks or overdue_tasks %}
+    <div class="container mt-4">
+      
+      <h2>Task Notifications</h2>
+
+      {% for task in upcoming_tasks %}
+        <a href="{% url 'manager:detail' task.id %}" class="no-underline">
+          <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Upcoming Due Date!</h4>
+            <p>Task: {{task.title}}</p>
+            <hr>
+            <p class="mb-0">Due Date: {{task.due_date}}</p>
+          </div>
+        </a>
+      {% endfor %}
+
+      {% for task in overdue_tasks %}
+        <a href="{% url 'manager:detail' task.id %}" class="no-underline">
+          <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Task Date Overdue!</h4>
+            <p>Task: {{task.title}}</p>
+            <hr>
+            <p class="mb-0">Due Date: {{task.due_date}}</p>
+          </div>
+        </a>
+      {% endfor %}
+      <!-- <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">New Task Assignment!</h4>
+        <p>Task: Task 2</p>
+        <hr>
+        <p class="mb-0">Assigned To: John Doe</p>
+      </div> -->
+    </div>
+  {% endif %}
+
+  {% if total_tasks != 0 %}
+
+    <div class="container mt-4">
+      <h2>Task Analytics</h2>
+
+      {% if tasks_per_day %}
+
+        <div class="card mt-4">
+          <div class="card-header">
+            Tasks completed per day in the last 30 days
+          </div>
+          <div class="card-body">
+            {{tasks_per_day|safe}}
+          </div>
+        </div>
+
+      {% endif %}
+
+      <div class="card mt-4">
+        <div class="card-header">
+          Tasks per Category
+        </div>
+        <div class="card-body">
+          {{tasks_by_status|safe}}
+        </div>
+      </div>
+
+      {% if tasks_duration %}
+
+        <div class="card mt-4">
+          <div class="card-header">
+            Tasks Durations
+          </div>
+          <div class="card-body">
+            {{tasks_duration|safe}}
+          </div>
+        </div>
+
+      {% endif %}
+
+      {% if assignee_productivity_bar %}
+
+        <div class="card mt-4">
+          <div class="card-header">
+            Assignee Productivity
+          </div>
+          <div class="card-body">
+            {{assignee_productivity_bar|safe}}
+            {{assignee_productivity_pie|safe}}
+          </div>
+        </div>
+
+      {% endif %}
+
+    </div>
+
+  {% else %}
+
+    <div class="container mt-4">
+      <h2>You currently does not have any task, please go to "New Task" to add your first Task.</h2>
+    </div>
+    
+  {% endif %}
+{% endblock %}

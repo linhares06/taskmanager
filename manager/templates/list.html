@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Task List{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Task List</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Task Name</th>
+        <th>Created by</th>
+        <th>Due Date</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Assigned To</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+        <tr>
+          <td><a href="{% url 'manager:detail' task.id %}">{{task.title}}</a></td>
+          <td>
+            {% if task.user == user %}
+              You
+            {% else %}
+              {{task.user}}
+            {% endif %}
+          </td>
+          <td>{{task.due_date}}</td>
+          <td>{{task.priority}}</td>
+          <td>
+            {% if task.completed == False %}
+              {{task.status}}
+            {% else %}
+              Completed
+            {% endif %}
+          </td>
+          <td>
+            {% if task.assignee == user %}
+              You
+            {% else %}
+              {{task.assignee}}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      
+    </tbody>
+  </table>
+  <div class="pagination">
+      {% if tasks.has_previous %}
+          <a href="?page={{ tasks.previous_page_number }}">Previous</a>
+      {% endif %}
+      <span class="current-page">{{ tasks.number }}</span>
+      {% if tasks.has_next %}
+          <a href="?page={{ tasks.next_page_number }}">Next</a>
+      {% endif %}
+  </div>
+</div>
+{% endblock %}
