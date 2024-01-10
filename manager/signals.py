@@ -6,6 +6,25 @@ from .models import Status, Priority, Tag
 
 @receiver(post_save, sender=User)
 def set_default_status(sender, instance, created, **kwargs):
+    """
+    Set default status choices for a new user upon creation.
+
+    Args:
+    - sender: The sender of the signal.
+    - instance: The User instance being saved.
+    - created: A boolean indicating whether the instance is being created.
+    - **kwargs: Additional keyword arguments.
+
+    Notes:
+    - Creates default status entries ('To Do', 'In Progress', 'On Hold', 'Archived')
+      for a newly created user.
+    - If an exception occurs during the creation process, the user instance is deleted.
+
+    Example:
+    >>> @receiver(post_save, sender=User)
+    >>> def my_callback(sender, instance, created, **kwargs):
+    >>>     set_default_status(sender, instance, created, **kwargs)
+    """
     if created:
         try:
             with transaction.atomic():
@@ -22,6 +41,24 @@ def set_default_status(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def set_default_priority(sender, instance, created, **kwargs):
+    """
+    Set default priority choices for a new user upon creation.
+
+    Args:
+    - sender: The sender of the signal.
+    - instance: The User instance being saved.
+    - created: A boolean indicating whether the instance is being created.
+    - **kwargs: Additional keyword arguments.
+
+    Notes:
+    - Creates default priority entries ('Low', 'Medium', 'High') for a newly created user.
+    - If an exception occurs during the creation process, the user instance is deleted.
+
+    Example:
+    >>> @receiver(post_save, sender=User)
+    >>> def my_callback(sender, instance, created, **kwargs):
+    >>>     set_default_priority(sender, instance, created, **kwargs)
+    """
     if created:
         try:
             with transaction.atomic():
@@ -33,6 +70,24 @@ def set_default_priority(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def set_default_tag(sender, instance, created, **kwargs):
+    """
+    Set default tag choices for a new user upon creation.
+
+    Args:
+    - sender: The sender of the signal.
+    - instance: The User instance being saved.
+    - created: A boolean indicating whether the instance is being created.
+    - **kwargs: Additional keyword arguments.
+
+    Notes:
+    - Creates a default tag entry ('Home Task') for a newly created user.
+    - If an exception occurs during the creation process, the user instance is deleted.
+
+    Example:
+    >>> @receiver(post_save, sender=User)
+    >>> def my_callback(sender, instance, created, **kwargs):
+    >>>     set_default_tag(sender, instance, created, **kwargs)
+    """
     if created:
         try:
             with transaction.atomic():

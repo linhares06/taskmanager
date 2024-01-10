@@ -17,6 +17,20 @@ CONFIGURATION_PRIORITY_OBJECT = 2
 CONFIGURATION_TAG_OBJECT = 3
 
 def get_overdue_tasks(tasks):
+    """
+    Filter and retrieve overdue tasks.
+
+    This function filters tasks based on the following conditions:
+    - The task is not marked as completed.
+    - The due date is earlier than today + a specified number of days (OVERDUE_DATE_VALUE).
+
+    Args:
+    - tasks (QuerySet): A queryset of Task objects.
+
+    Returns:
+    - QuerySet: A filtered queryset containing overdue tasks sorted by due date.
+      Each task is represented by the fields 'id', 'title', and 'due_date'.
+    """
     overdue_tasks = tasks.filter(
         completed=False,
         due_date__lt=date.today() + timedelta(days=OVERDUE_DATE_VALUE)
@@ -25,6 +39,21 @@ def get_overdue_tasks(tasks):
     return overdue_tasks
 
 def get_upcomming_tasks(tasks):
+    """
+    Filter and retrieve upcoming tasks.
+
+    This function filters tasks based on the following conditions:
+    - The task is not marked as completed.
+    - The due date is within a specified range, from today + a certain number of days
+      (OVERDUE_DATE_VALUE) to today + a different number of days (UPCOMING_DUE_DATE_VALUE).
+
+    Args:
+    - tasks (QuerySet): A queryset of Task objects.
+
+    Returns:
+    - QuerySet: A filtered queryset containing upcoming tasks sorted by due date.
+      Each task is represented by the fields 'id', 'title', and 'due_date'.
+    """
     upcoming_tasks = tasks.filter(
         completed=False,
         due_date__gte=date.today() + timedelta(days=OVERDUE_DATE_VALUE),
@@ -34,45 +63,103 @@ def get_upcomming_tasks(tasks):
     return upcoming_tasks
 
 def generate_task_per_day_plot(tasks):
+    """
+    Generate a line plot of completed tasks per day over the last 30 days.
+
+    This function queries completed tasks from the past 30 days, counts the tasks
+    completed on each day, and generates a line plot to visualize the data.
+
+    Args:
+    - tasks (QuerySet): A queryset of Task objects.
+
+    Returns:
+    - str: HTML code representing the generated line plot.
+    """
     today = datetime.now().date()
-    start_date = today - timedelta(days=30)  # Assuming a 30-day period
+    start_date = today - timedelta(days=30)
     
+    # Count completed tasks for each day in the date range
     task_counts = tasks.filter(
         completed=True,
         completed_at__gte=start_date,
         completed_at__lte=today
     ).values('completed_at').annotate(count=Count('id'))
 
+    # Extract dates and corresponding task counts
     dates = [entry['completed_at'] for entry in task_counts]
     counts = [entry['count'] for entry in task_counts]
 
+    # Generate line plot using PlotGenerator class
     return PlotGenerator().generate_task_per_day(dates, counts)
 
 def generate_task_by_status_plot(tasks):
+    """
+    Generate a pie chart to visualize the distribution of tasks by status.
+
+    This function queries tasks and counts the number of tasks for each unique status.
+    It then generates a pie chart to represent the distribution of tasks across different statuses.
+
+    Args:
+    - tasks (QuerySet): A queryset of Task objects.
+
+    Returns:
+    - str: HTML code representing the generated pie chart.
+    """
+    # Count tasks for each unique status
     task_status_counts = tasks.values('status__name').annotate(count=Count('id'))
 
+    # Extract status names and corresponding task counts
     status = [entry['status__name'] for entry in task_status_counts]
     counts = [entry['count'] for entry in task_status_counts]
 
+    # Generate pie chart using PlotGenerator class
     return PlotGenerator().generate_task_by_status(status, counts)
 
 def generate_task_duration_plot(tasks):
-    
+    """
+    Generate a horizontal bar chart to visualize the durations of completed tasks.
+
+    This function queries completed tasks and calculates the duration (in days) of each task.
+    It then generates a horizontal bar chart to represent the task durations.
+
+    Args:
+    - tasks (QuerySet): A queryset of Task objects.
+
+    Returns:
+    - str: HTML code representing the generated horizontal bar chart.
+    """
+    # Query completed tasks and calculate durations
     durations = tasks.filter(completed=True).annotate(duration=F('completed_at') - F('created_at')).values_list('duration', 'title')
 
+    # Extract duration and title lists
     duration_list, title_list = zip(*[(duration.days, title) for duration, title in durations])
 
+    # Generate horizontal bar chart using PlotGenerator class
     return PlotGenerator().generate_task_duration([days + 1 for days in duration_list], title_list)
 
 def generate_assignee_productivity_plot(tasks):
-    
+    """
+    Generate both a grouped bar chart and a pie chart to visualize assignee productivity.
+
+    This function queries completed tasks and calculates the count of completed tasks for each assignee.
+    It then generates a grouped bar chart and a pie chart to represent assignee productivity.
+
+    Args:
+    - tasks (QuerySet): A queryset of Task objects.
+
+    Returns:
+    - tuple: A tuple containing HTML codes representing the generated grouped bar chart and pie chart.
+    """
+    # Query completed tasks and calculate completed task counts for each assignee
     results = tasks.filter(completed=True).values('assignee__username').annotate(
         completed_tasks=Count('id'),
     ) 
     
+    # Extract assignee and completed task lists
     assignees = [entry['assignee__username'] for entry in results]
     completed_tasks = [entry['completed_tasks'] for entry in results]
 
+    # Generate grouped bar chart and pie chart using PlotGenerator class
     return PlotGenerator().generate_assignee_productivity(assignees, completed_tasks)
 
 def index(request):

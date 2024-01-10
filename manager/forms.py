@@ -126,7 +126,31 @@ class SearchForm(forms.Form):
         self.fields['assignee'].widget.attrs.update(SELECT_FIELD_CSS_CLASS)
 
     def get_choices(self, user, model):
+        """
+        Retrieve choices based on the specified user and model.
 
+        Args:
+        - user: The user for whom choices are being retrieved.
+        - model: The Django model class for which choices are being retrieved.
+
+        Returns:
+        - list: A list of tuples representing choices. Each tuple contains two elements:
+        - The first element is the ID of the choice.
+        - The second element is the display name of the choice.
+
+        Example:
+        For a User model:
+        >>> get_choices(user_instance, User)
+        [(1, 'username1'), (2, 'username2'), ...]
+
+        For other models:
+        >>> get_choices(user_instance, AnotherModel)
+        [(1, 'name1'), (2, 'name2'), ...]
+
+        Special Handling:
+        - Inserts an empty choice at the beginning of the list.
+        - If the model is Status, appends a special choice for 'Completed' with ID -1.
+        """
         choices = []
 
         if model == User:
