@@ -4,16 +4,16 @@ A simple task manager built with Django framework and featuring Plotly graphs on
 
 ## Features
 
-Task creation and management.
-Due dates and priorities.
-Assign tasks to other users.
-Comment and collaborate on tasks.
-Track task progress and completion.
-###Viewing graphs:
-**Completed Task Per Day:** Visual representation of completed tasks per day over the last 30 days.
-**Task by Status:** Visualize the distribution of tasks based on their status (e.g., To Do, In Progress, Completed).
-**Task Duration:** Duration analysis of completed tasks, helping to identify trends.
-**Assignee Productivity:** Productivity analysis based on tasks assigned to other users.
+Task creation and management. <br/>
+Due dates and priorities. <br/>
+Assign tasks to other users. <br/>
+Comment and collaborate on tasks. <br/>
+Track task progress and completion. <br/>
+Viewing graphs: <br/>
+**Completed Task Per Day:** Visual representation of completed tasks per day over the last 30 days. <br/>
+**Task by Status:** Visualize the distribution of tasks based on their status (e.g., To Do, In Progress, Completed). <br/>
+**Task Duration:** Duration analysis of completed tasks, helping to identify trends. <br/>
+**Assignee Productivity:** Productivity analysis based on tasks assigned to other users. <br/>
 
 ## Prerequisites
 
