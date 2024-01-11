@@ -8,11 +8,31 @@ CHAR_FIELD_CSS_CLASS = { 'class': 'form-control' }
 SELECT_FIELD_CSS_CLASS = { 'class': 'form-select' }
 
 def remove_first_element_from_combo(combobox):
+    """
+    Removes the first element from a combobox and returns the modified list of choices.
+
+    Args:
+    - combobox: An iterable representing the choices in the combobox.
+
+    Returns:
+    - list: A list of choices with the first element removed.
+    """
     choices = list(combobox)
     choices.pop(0)
     return choices
 
 class SignupForm(UserCreationForm):
+    """
+    Custom form for user signup.
+
+    Extends Django's built-in UserCreationForm to include additional styling for form fields.
+
+    Attributes:
+    - username: CharField - User's desired username.
+    - email: CharField - User's email address.
+    - password1: CharField - User's password.
+    - password2: CharField - Confirmation of the user's password.
+    """
     class Meta:
         model = User
         fields = ('username', 'email', 'password1', 'password2')
@@ -23,10 +43,34 @@ class SignupForm(UserCreationForm):
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=CHAR_FIELD_CSS_CLASS))
 
 class LoginForm(AuthenticationForm):
+    """
+    Custom form for user login.
+
+    Extends Django's built-in AuthenticationForm to include additional styling for form fields.
+
+    Attributes:
+    - username: CharField - User's username for authentication.
+    - password: CharField - User's password for authentication.
+    """
     username = forms.CharField(widget=forms.TextInput(attrs=CHAR_FIELD_CSS_CLASS))
     password = forms.CharField(widget=forms.PasswordInput(attrs=CHAR_FIELD_CSS_CLASS))
 
 class NewTaskForm(forms.ModelForm):
+    """
+    Form for creating a new task.
+
+    Extends Django's ModelForm for the Task model with customized widgets and additional logic
+    to filter choices and set default values based on the user.
+
+    Attributes:
+    - title: CharField - Title of the task.
+    - description: Textarea - Description of the task.
+    - due_date: TextInput - Due date of the task (formatted as 'date').
+    - status: ModelChoiceField - Status of the task.
+    - assignee: ModelChoiceField - Assignee of the task.
+    - priority: ModelChoiceField - Priority of the task.
+    - tags: ModelMultipleChoiceField - Tags associated with the task.
+    """
     class Meta:
         model = Task
         fields = ('title', 'description', 'due_date', 'status', 'assignee', 'priority', 'tags')
@@ -37,6 +81,12 @@ class NewTaskForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the form with additional logic for setting choices and default values.
+
+        Args:
+        - user: User object - The user for whom the form is being rendered.
+        """
         user = kwargs.pop('user')
         super(NewTaskForm, self).__init__(*args, **kwargs)
         self.fields["priority"].queryset = Priority.objects.filter(user=user)
@@ -54,6 +104,21 @@ class NewTaskForm(forms.ModelForm):
         self.fields['tags'].widget.attrs.update(SELECT_FIELD_CSS_CLASS)
 
 class EditTaskForm(forms.ModelForm):
+    """
+    Form for editing an existing task.
+
+    Extends Django's ModelForm for the Task model with customized widgets and additional logic
+    to filter choices based on the user.
+
+    Attributes:
+    - title: CharField - Title of the task.
+    - description: Textarea - Description of the task.
+    - due_date: TextInput - Due date of the task (formatted as 'date').
+    - status: ModelChoiceField - Status of the task.
+    - assignee: ModelChoiceField - Assignee of the task.
+    - priority: ModelChoiceField - Priority of the task.
+    - tags: ModelMultipleChoiceField - Tags associated with the task.
+    """
     class Meta:
         model = Task
         fields = ('title', 'description', 'due_date', 'status', 'assignee', 'priority', 'tags')
@@ -64,6 +129,12 @@ class EditTaskForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the form with additional logic for setting choices.
+
+        Args:
+        - user: User object - The user for whom the form is being rendered.
+        """
         user = kwargs.pop('user')
         super(EditTaskForm, self).__init__(*args, **kwargs)
         self.fields['priority'].queryset = Priority.objects.filter(user=user)
@@ -80,27 +151,70 @@ class EditTaskForm(forms.ModelForm):
         self.fields['tags'].widget.attrs.update(SELECT_FIELD_CSS_CLASS)
 
 class NewCommentForm(forms.ModelForm):
+    """
+    Form for creating a new comment.
+
+    Extends Django's ModelForm for the Comment model.
+
+    Attributes:
+    - content: Textarea - Content of the comment.
+    """
     class Meta:
         model = Comment
         fields = ('content',)
 
 class NewStatusForm(forms.ModelForm):
+    """
+    Form for creating a new status.
+
+    Extends Django's ModelForm for the Status model.
+
+    Attributes:
+    - name: CharField - Name of the status.
+    """
     class Meta:
         model = Status
         fields = ('name',)
 
 class NewPriorityForm(forms.ModelForm):
+    """
+    Form for creating a new priority.
+
+    Extends Django's ModelForm for the Priority model.
+
+    Attributes:
+    - name: CharField - Name of the priority.
+    """
     class Meta:
         model = Priority
         fields = ('name',)
 
 class NewTagForm(forms.ModelForm):
+    """
+    Form for creating a new tag.
+
+    Extends Django's ModelForm for the Tag model.
+
+    Attributes:
+    - name: CharField - Name of the tag.
+    """
     class Meta:
         model = Tag
         fields = ('name',)
 
 class SearchForm(forms.Form):
+    """
+    Form for searching tasks based on various criteria.
 
+    Attributes:
+    - title: CharField - Task title for search.
+    - description: CharField - Task description for search.
+    - due_date: CharField - Due date for search (formatted as a date).
+    - assignee: ChoiceField - Assignee for search.
+    - status: ChoiceField - Task status for search.
+    - priority: ChoiceField - Task priority for search.
+    - tag: MultipleChoiceField - Task tags for search.
+    """
     title = forms.CharField(required=False, widget=forms.TextInput(attrs=CHAR_FIELD_CSS_CLASS))
     description = forms.CharField(required=False, widget=forms.TextInput(attrs=CHAR_FIELD_CSS_CLASS))
     due_date = forms.CharField(required=False, widget=forms.TextInput(attrs={ 'type': 'date', **CHAR_FIELD_CSS_CLASS }))
@@ -110,6 +224,12 @@ class SearchForm(forms.Form):
     tag = forms.MultipleChoiceField(required=False)
     
     def __init__(self, *args, **kwargs):
+        """
+        Constructor for the SearchForm.
+
+        Parameters:
+        - user: User - The user for whom the form is being rendered.
+        """
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         

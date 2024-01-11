@@ -163,16 +163,45 @@ def generate_assignee_productivity_plot(tasks):
     return PlotGenerator().generate_assignee_productivity(assignees, completed_tasks)
 
 def index(request):
+    """
+    View for rendering the index page.
+
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+
+    Returns:
+    - HttpResponse - Renders the 'index.html' page if the user is authenticated.
+    - HttpResponse - Renders the 'home.html' page if the user is not authenticated.
+    """
     if request.user:
         return render(request, 'index.html')
     else:
         return render(request, 'home.html')
 
 def logout(request):
+    """
+    View for handling user logout.
+
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+
+    Returns:
+    - HttpResponse - Redirects to the root URL after logging out the user.
+    """
     logout(request)
     return render(request, '/')
 
 def signup(request):
+    """
+    View for user registration.
+
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+
+    Returns:
+    - HttpResponse - Renders the 'signup.html' page with the registration form.
+    - HttpResponse - Redirects to the login page after successful user registration.
+    """
 
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -191,6 +220,15 @@ def signup(request):
 
 @login_required
 def home(request):
+    """
+    View for rendering the home page.
+
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+
+    Returns:
+    - HttpResponse - Renders the 'home.html' page with the user's task data and visualizations.
+    """
     tasks = Task.objects.filter(Q(user=request.user) | Q(assignee=request.user))
 
     total_tasks = tasks.count()
@@ -231,6 +269,15 @@ def home(request):
 
 @login_required
 def list(request):
+    """
+    View for rendering a paginated list of tasks.
+
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+
+    Returns:
+    - HttpResponse - Renders the 'list.html' page with paginated tasks.
+    """
     ROWS_PER_PAGE = 15
 
     tasks = Task.objects.filter(Q(user=request.user) | Q(assignee=request.user)).order_by('created_at')
@@ -245,7 +292,15 @@ def list(request):
 
 @login_required
 def new(request):
+    """
+    View for creating a new task.
 
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+
+    Returns:
+    - HttpResponse - Renders the 'form.html' page for creating a new task.
+    """
     if request.method == 'POST':
         form = NewTaskForm(request.POST, user=request.user)
 
@@ -266,6 +321,16 @@ def new(request):
 
 @login_required
 def edit(request, pk):
+    """
+    View for editing an existing task.
+
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+    - pk: int - The primary key of the task to be edited.
+
+    Returns:
+    - HttpResponse - Renders the 'form.html' page for editing the task.
+    """
     task = get_object_or_404(Task, pk=pk)
 
     if task.user == request.user:
@@ -294,6 +359,16 @@ def edit(request, pk):
 
 @login_required
 def delete(request, pk):
+    """
+    View for deleting an existing task.
+
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+    - pk: int - The primary key of the task to be deleted.
+
+    Returns:
+    - HttpResponse - Redirects to the task list page after deletion.
+    """
     task = get_object_or_404(Task, pk=pk)
 
     if task.user == request.user:
@@ -305,6 +380,17 @@ def delete(request, pk):
 
 @login_required
 def detail(request, pk):
+    """
+    View for displaying task details and handling new comments.
+
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+    - pk: int - The primary key of the task to be displayed.
+
+    Returns:
+    - HttpResponse - Renders the task detail page with comments and a comment form.
+    - HttpResponse - Redirects to the task list page if the user is not authorized.
+    """
 
     #User submit comment form
     if request.method == 'POST':
@@ -338,7 +424,16 @@ def detail(request, pk):
         
 @login_required
 def mark_completed_task(request, pk):
+    """
+    View for marking a task as completed or incomplete.
 
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+    - pk: int - The primary key of the task to be marked.
+
+    Returns:
+    - HttpResponse - Redirects to the task detail page after marking the task.
+    """
     #Set the task to completed
     task = get_object_or_404(Task, id=pk)
     #Check and uncheck completed value
@@ -355,7 +450,15 @@ def mark_completed_task(request, pk):
 
 @login_required
 def configuration(request):
+    """
+    View for managing configurations (Status, Priority, Tag).
 
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+
+    Returns:
+    - HttpResponse - Renders the configuration page with forms and existing configurations.
+    """
     if request.method == 'POST':
 
         if 'status_form' in request.POST:
@@ -415,7 +518,17 @@ def configuration(request):
 
 @login_required
 def configuration_delete(request, pk, cfg_obj):
+    """
+    View for deleting configuration objects (Status, Priority, Tag).
 
+    Parameters:
+    - request: HttpRequest - The HTTP request object.
+    - pk: int - The primary key of the object to be deleted.
+    - cfg_obj: str - The type of configuration object to be deleted.
+
+    Returns:
+    - HttpResponse - Redirects the user back to the configuration list page.
+    """
     if cfg_obj == CONFIGURATION_STATUS_OBJECT:
         obj = Status
     elif cfg_obj == CONFIGURATION_PRIORITY_OBJECT:
@@ -440,6 +553,18 @@ def configuration_delete(request, pk, cfg_obj):
 
 @login_required
 def search(request):
+    """
+    Form for searching tasks based on various criteria.
+
+    Attributes:
+    - title: CharField - Task title for search.
+    - description: CharField - Task description for search.
+    - due_date: CharField - Due date for search (formatted as a date).
+    - assignee: ChoiceField - Assignee for search.
+    - status: ChoiceField - Task status for search.
+    - priority: ChoiceField - Task priority for search.
+    - tag: MultipleChoiceField - Task tags for search.
+    """
     form = SearchForm(request.GET, user=request.user)
     query = None
     results = []
